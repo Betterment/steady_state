@@ -1,0 +1,9 @@
+.bundle/
+.yardoc
+_yardoc/
+doc/
+pkg/
+spec/reports/
+spec/examples.txt
+tmp/
+Gemfile.lock
