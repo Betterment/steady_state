@@ -118,35 +118,25 @@ With these tools, you can define rich sets of state-aware rules about your objec
 
 ### Bringing it All Together
 
-Commonly, state transition events are expected to have names, like "melt" and "evaporate," and other such _action verbs_. SteadyState has no such expectation, and will not define any named events for you.
+Commonly, state transition events are expected to have names, like "melt" and "evaporate," and other such _action verbs_.
+SteadyState has no such expectation, and will not define any named events for you.
 
 If you need them, we encourage you to define these transitions using plain ol' Ruby methods, like so:
 
 ```ruby
 def melt
-  self.state = 'liquid'
-  valid? # will return `false` if state transition is invalid
+  with_lock { update(state: 'liquid') }
 end
 
 def melt!
-  self.state = 'liquid'
-  validate! # will raise an exception if state transition is invalid
+  with_lock { update!(state: 'liquid') }
 end
 ```
 
-If you are using ActiveRecord, you can rely on built-in persistence methods to construct your state transition operations:
+The use of `with_lock` is *strongly encouraged* in order to prevent race conditions that might result in invalid state transitions.
 
-```ruby
-def melt
-  update(state: 'liquid')
-end
-
-def melt!
-  update!(state: 'liquid')
-end
-```
-
-For complex persistence operations, we encourage the use of existing persistence helpers like `transaction` and `with_lock`, to provide atomicity and avoid race conditions:
+This is especially important for operations with side-effects, as a transactional lock will both prevent race conditions and guarantee an atomic rollback
+if anything raises an exception:
 
 ```ruby
 def melt
@@ -178,7 +168,21 @@ class MaterialsController < ApplicationController
 end
 ```
 
-With the ability to define your states, apply transitional validations, and persist state changes, you should have everything you need to start using SteadyState inside of your application.
+Similar methods can be defined on ActiveModel classes that are not backed by a database:
+
+```ruby
+def melt
+  self.state = 'liquid'
+  valid? # will return `false` if state transition is invalid
+end
+
+def melt!
+  self.state = 'liquid'
+  validate! # will raise an exception if state transition is invalid
+end
+```
+
+With the ability to define your states, apply transitional validations, and persist state changes, you should have everything you need to start using SteadyState inside of your application!
 
 ## Addional Features & Configuration
 
