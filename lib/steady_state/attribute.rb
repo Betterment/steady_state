@@ -13,7 +13,7 @@ module SteadyState
     end
 
     class_methods do
-      def steady_state(attr_name, predicates: true, scopes: SteadyState.active_record?(self), &block) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/LineLength
+      def steady_state(attr_name, predicates: true, scopes: SteadyState.active_record?(self), &block) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/LineLength
         overrides = Module.new do
           define_method :"validate_#{attr_name}_transition_to" do |next_value|
             if public_send(attr_name).may_become?(next_value)

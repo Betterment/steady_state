@@ -23,11 +23,8 @@ gem 'steady_state'
 To enable stateful behavior on an attribute or column, call `steady_state` with the name of the attribute, and define the states as strings, like so:
 
 ```ruby
-class Material
-  include ActiveModel::Model
+class Material < ApplicationRecord
   include SteadyState
-
-  attr_accessor :state
 
   steady_state :state do
     state 'solid', default: true
@@ -65,20 +62,19 @@ A class may have any number of these `steady_state` declarations, one per statef
 After your object has been instantiated (or loaded from a database via your ORM), the transitional validations and rules begin to take effect. To change the state, simply use the attribute's setter (e.g. `state=`), and then call `valid?` to see if the change will be accepted:
 
 ```ruby
-material.state.solid? # => true
-material.state = 'liquid'
-material.state # => 'liquid'
-material.valid? # => true
-```
+material.with_lock do # if this is an ActiveRecord, a lock is necessary to avoid race conditions
+  material.state.solid? # => true
+  material.state = 'liquid'
+  material.state # => 'liquid'
+  material.valid? # => true
 
-If the change is not valid, a validation error will be added to the object:
-
-```ruby
-material.state.liquid? # => true
-material.state = 'solid'
-material.state # => 'solid'
-material.valid? # => false
-material.errors[:state] # => ['is invalid']
+  # If the change is not valid, a validation error will be added to the object:
+  material.state.liquid? # => true
+  material.state = 'solid'
+  material.state # => 'solid'
+  material.valid? # => false
+  material.errors[:state] # => ['is invalid']
+end
 ```
 
 #### A Deliberate Design Choice
@@ -98,55 +94,27 @@ model.errors[:amount] # => ['must be greater than 0']
 
 In keeping with the general pattern of `ActiveModel::Validations`, we rely on an object's _current state in memory_ to determine whether or not it is valid. For both the `state` and `amount` fields, the attribute is allowed to hold an invalid value, resulting in a validation error on the object.
 
-#### Custom Validations
+### Saving Changes to State
 
-In addition to the built-in transitional validations, you can define your own validations that take effect only when the object enters a specific state:
-
-```ruby
-validates :container, absence: true, if: :solid?
-validates :container, presence: true, if: :liquid?
-```
-
-With such a validation in place, a state change will not be valid unless the related validation rules are resolved at the same time:
-
-```ruby
-object.update!(state: 'liquid') # !! ActiveRecord::RecordInvalid
-object.update!(state: 'liquid', container: Cup.new) # 🎉
-```
-
-With these tools, you can define rich sets of state-aware rules about your object, and then rely simply on built-in methods like `valid?` and `errors` to determine if an operation violates these rules.
-
-### Bringing it All Together
-
-Commonly, state transition events are expected to have names, like "melt" and "evaporate," and other such _action verbs_. SteadyState has no such expectation, and will not define any named events for you.
+Commonly, state transition events are expected to have names, like "melt" and "evaporate," and other such _action verbs_.
+SteadyState has no such expectation, and will not define any named events for you.
 
 If you need them, we encourage you to define these transitions using plain ol' Ruby methods, like so:
 
 ```ruby
 def melt
-  self.state = 'liquid'
-  valid? # will return `false` if state transition is invalid
+  with_lock { update(state: 'liquid') }
 end
 
 def melt!
-  self.state = 'liquid'
-  validate! # will raise an exception if state transition is invalid
+  with_lock { update!(state: 'liquid') }
 end
 ```
 
-If you are using ActiveRecord, you can rely on built-in persistence methods to construct your state transition operations:
+The use of `with_lock` is *strongly encouraged* in order to prevent race conditions that might result in invalid state transitions.
 
-```ruby
-def melt
-  update(state: 'liquid')
-end
-
-def melt!
-  update!(state: 'liquid')
-end
-```
-
-For complex persistence operations, we encourage the use of existing persistence helpers like `transaction` and `with_lock`, to provide atomicity and avoid race conditions:
+This is especially important for operations with side-effects, as a transactional lock will both prevent race conditions and guarantee an atomic rollback
+if anything raises an exception:
 
 ```ruby
 def melt
@@ -178,7 +146,7 @@ class MaterialsController < ApplicationController
 end
 ```
 
-With the ability to define your states, apply transitional validations, and persist state changes, you should have everything you need to start using SteadyState inside of your application.
+With the ability to define your states, apply transitional validations, and persist state changes, you should have everything you need to start using SteadyState inside of your application!
 
 ## Addional Features & Configuration
 
@@ -206,6 +174,24 @@ Either way, predicate methods are always available on the value itself:
 material.status.solid? # => true
 material.status.liquid? # => false
 ```
+
+### Custom Validations
+
+Using the supplied predicate methods, you can define your own validations that take effect only when the object enters a specific state:
+
+```ruby
+validates :container, absence: true, if: :solid?
+validates :container, presence: true, if: :liquid?
+```
+
+With such a validation in place, a state change will not be valid unless the related validation rules are resolved at the same time:
+
+```ruby
+object.update!(state: 'liquid') # !! ActiveRecord::RecordInvalid
+object.update!(state: 'liquid', container: Cup.new) # 🎉
+```
+
+With these tools, you can define rich sets of state-aware rules about your object, and then rely simply on built-in methods like `valid?` and `errors` to determine if an operation violates these rules.
 
 ### Scopes
 
@@ -243,6 +229,33 @@ As it stands, state history is not preserved, but it is still possible to get a 
 
 ```ruby
 material.state.previous_values # => ['solid']
+```
+
+### ActiveModel Support
+
+SteadyState is also available to classes that are not database-backed, as long as they include the `ActiveModel::Model` mixin:
+
+```ruby
+class Material
+  include ActiveModel::Model
+
+  attr_accessor :state
+
+  steady_state :state do
+    state 'solid', default: true
+    state 'liquid', from: 'solid'
+  end
+
+  def melt
+    self.state = 'liquid'
+    valid? # will return `false` if state transition is invalid
+  end
+  
+  def melt!
+    self.state = 'liquid'
+    validate! # will raise an exception if state transition is invalid
+  end
+end
 ```
 
 ## How to Contribute
