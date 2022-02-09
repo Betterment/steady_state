@@ -120,6 +120,10 @@ RSpec.describe SteadyState::Attribute do
         expect(subject.state).to eq 'liquid'
       end
 
+      it 'includes a class method for all states' do
+        expect(steady_state_class.states.map(&:to_s)).to eq %w(solid liquid gas plasma)
+      end
+
       it 'does not allow initialization to an invalid next state' do
         object = steady_state_class.new(state: 'solid')
         expect(object).not_to be_valid
