@@ -13,7 +13,7 @@ module SteadyState
     end
 
     class_methods do
-      def steady_state(attr_name, predicates: true, scopes: SteadyState.active_record?(self), &block) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/LineLength
+      def steady_state(attr_name, predicates: true, states_getter: true, scopes: SteadyState.active_record?(self), &block) # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/LineLength
         overrides = Module.new do
           define_method :"validate_#{attr_name}_transition_to" do |next_value|
             if public_send(attr_name).may_become?(next_value)
@@ -43,6 +43,15 @@ module SteadyState
         prepend overrides
 
         state_machines[attr_name].instance_eval(&block)
+
+        if states_getter
+          cattr_reader(:"#{attr_name.to_s.pluralize}") do
+            state_machines[attr_name].states.map do |state|
+              State.new(state_machines[attr_name], state, nil)
+            end
+          end
+        end
+
         delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
         if scopes
           state_machines[attr_name].states.each do |state|

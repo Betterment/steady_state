@@ -290,6 +290,39 @@ RSpec.describe SteadyState::Attribute do
     end
   end
 
+  context 'with the states_getter option' do
+    let(:query_object) { double(where: []) } # rubocop:disable RSpec/VerifiedDoubles
+
+    before do
+      options = opts
+      steady_state_class.module_eval do
+        attr_accessor :car
+
+        steady_state :car, options do
+          state 'driving', default: true
+          state 'stopped', from: 'driving'
+          state 'parked', from: 'stopped'
+        end
+      end
+    end
+
+    context 'default' do
+      let(:opts) { {} }
+
+      it 'defines states getter method' do
+        expect(steady_state_class.cars).to eq %w(driving stopped parked)
+      end
+    end
+
+    context 'disabled' do
+      let(:opts) { { states_getter: false } }
+
+      it 'does not define states getter method' do
+        expect { steady_state_class.cars }.to raise_error(NoMethodError, /undefined method `cars'/)
+      end
+    end
+  end
+
   context 'with the scopes option' do
     let(:query_object) { double(where: []) } # rubocop:disable RSpec/VerifiedDoubles
 
