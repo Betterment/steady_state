@@ -120,10 +120,6 @@ RSpec.describe SteadyState::Attribute do
         expect(subject.state).to eq 'liquid'
       end
 
-      it 'includes a class method for all states' do
-        expect(steady_state_class.states.map(&:to_s)).to eq %w(solid liquid gas plasma)
-      end
-
       it 'does not allow initialization to an invalid next state' do
         object = steady_state_class.new(state: 'solid')
         expect(object).not_to be_valid
@@ -290,6 +286,39 @@ RSpec.describe SteadyState::Attribute do
         expect(subject).not_to respond_to(:open?)
         expect(subject).not_to respond_to(:closed?)
         expect(subject).not_to respond_to(:locked?)
+      end
+    end
+  end
+
+  context 'with the states_getter option' do
+    let(:query_object) { double(where: []) } # rubocop:disable RSpec/VerifiedDoubles
+
+    before do
+      options = opts
+      steady_state_class.module_eval do
+        attr_accessor :car
+
+        steady_state :car, options do
+          state 'driving', default: true
+          state 'stopped', from: 'driving'
+          state 'parked', from: 'stopped'
+        end
+      end
+    end
+
+    context 'default' do
+      let(:opts) { {} }
+
+      it 'defines states getter method' do
+        expect(steady_state_class.cars).to eq %w(driving stopped parked)
+      end
+    end
+
+    context 'disabled' do
+      let(:opts) { { states_getter: false } }
+
+      it 'does not define states getter method' do
+        expect { steady_state_class.cars }.to raise_error(NoMethodError, /undefined method `cars'/)
       end
     end
   end

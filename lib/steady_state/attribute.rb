@@ -47,7 +47,7 @@ module SteadyState
         if states_getter
           cattr_reader(:"#{attr_name.to_s.pluralize}") do
             state_machines[attr_name].states.map do |state|
-              SteadyState::Attribute::State.new(state_machines[attr_name], state, nil)
+              State.new(state_machines[attr_name], state, nil)
             end
           end
         end
