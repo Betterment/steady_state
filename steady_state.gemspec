@@ -14,6 +14,9 @@ Gem::Specification.new do |s|
     Designed to work with `ActiveRecord` and `ActiveModel` classes,
     or anywhere where Rails validations are used.
   DESC
+  s.metadata = {
+    'rubygems_mfa_required' => 'true',
+  }
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
