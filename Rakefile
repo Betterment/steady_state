@@ -13,4 +13,14 @@ require 'rspec/core'
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec)
 
-task default: %i(rubocop spec)
+def default_task
+  if ENV['APPRAISAL_INITIALIZED'] || ENV['CI']
+    %i(rubocop spec)
+  else
+    require 'appraisal'
+    Appraisal::Task.new
+    %i(appraisal)
+  end
+end
+
+task(:default).clear.enhance(default_task)
