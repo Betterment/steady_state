@@ -223,7 +223,7 @@ RSpec.describe SteadyState::Attribute do
       steady_state_class.module_eval do
         attr_accessor :door
 
-        steady_state :door, options do
+        steady_state :door, **options do
           state 'open', default: true
           state 'closed', from: 'open'
           state 'locked', from: 'closed'
@@ -298,7 +298,7 @@ RSpec.describe SteadyState::Attribute do
       steady_state_class.module_eval do
         attr_accessor :car
 
-        steady_state :car, options do
+        steady_state :car, **options do
           state 'driving', default: true
           state 'stopped', from: 'driving'
           state 'parked', from: 'stopped'
@@ -339,7 +339,7 @@ RSpec.describe SteadyState::Attribute do
           defined_scopes[name] ||= callable
         end
 
-        steady_state :car, options do
+        steady_state :car, **options do
           state 'driving', default: true
           state 'stopped', from: 'driving'
           state 'parked', from: 'stopped'
