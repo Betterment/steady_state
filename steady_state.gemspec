@@ -18,10 +18,12 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
 
+  s.required_ruby_version = '>= 2.6.5'
+
   s.add_dependency 'activemodel', '>= 4.0'
   s.add_dependency 'activesupport', '>= 4.0'
 
+  s.add_development_dependency 'betterlint'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rubocop-betterment'
 end
