@@ -188,11 +188,11 @@ RSpec.describe SteadyState::Attribute do
       expect(subject.step.may_become?('step-1')).to eq false
       expect(subject.step.may_become?('step-2')).to eq true
       expect(subject.step.may_become?('cancelled')).to eq true
-      expect(subject.step.next_values).to match_array(['cancelled', 'step-2'])
+      expect(subject.step.next_values).to match_array(%w(cancelled step-2))
       expect(subject.step.previous_values).to match_array([])
       expect { subject.step = 'cancelled' }.to change { subject.step }.from('step-1').to('cancelled')
       expect(subject.step.next_values).to match_array([])
-      expect(subject.step.previous_values).to match_array(['step-1', 'step-2'])
+      expect(subject.step.previous_values).to match_array(%w(step-1 step-2))
       expect(subject).to be_valid
     end
 
@@ -200,7 +200,7 @@ RSpec.describe SteadyState::Attribute do
       expect(subject.step.may_become?('step-1')).to eq false
       expect(subject.step.may_become?('step-2')).to eq true
       expect(subject.step.may_become?('cancelled')).to eq true
-      expect(subject.step.next_values).to match_array(['cancelled', 'step-2'])
+      expect(subject.step.next_values).to match_array(%w(cancelled step-2))
       expect(subject.step.previous_values).to match_array([])
       expect { subject.step = 'step-2' }.to change { subject.step }.from('step-1').to('step-2')
       expect(subject).to be_valid
@@ -212,7 +212,7 @@ RSpec.describe SteadyState::Attribute do
       expect(subject.step.previous_values).to match_array(['step-1'])
       expect { subject.step = 'cancelled' }.to change { subject.step }.from('step-2').to('cancelled')
       expect(subject.step.next_values).to match_array([])
-      expect(subject.step.previous_values).to match_array(['step-1', 'step-2'])
+      expect(subject.step.previous_values).to match_array(%w(step-1 step-2))
       expect(subject).to be_valid
     end
   end
@@ -223,7 +223,7 @@ RSpec.describe SteadyState::Attribute do
       steady_state_class.module_eval do
         attr_accessor :door
 
-        steady_state :door, options do
+        steady_state :door, **options do
           state 'open', default: true
           state 'closed', from: 'open'
           state 'locked', from: 'closed'
@@ -298,7 +298,7 @@ RSpec.describe SteadyState::Attribute do
       steady_state_class.module_eval do
         attr_accessor :car
 
-        steady_state :car, options do
+        steady_state :car, **options do
           state 'driving', default: true
           state 'stopped', from: 'driving'
           state 'parked', from: 'stopped'
@@ -339,7 +339,7 @@ RSpec.describe SteadyState::Attribute do
           defined_scopes[name] ||= callable
         end
 
-        steady_state :car, options do
+        steady_state :car, **options do
           state 'driving', default: true
           state 'stopped', from: 'driving'
           state 'parked', from: 'stopped'

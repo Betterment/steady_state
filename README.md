@@ -231,6 +231,33 @@ As it stands, state history is not preserved, but it is still possible to get a 
 material.state.previous_values # => ['solid']
 ```
 
+### The "States Getter"
+
+A pluralized, class-level helper method can be used to access all possible state values:
+
+```ruby
+Material.states # => ['solid', 'liquid', 'gas']
+```
+
+These values respond to reflection methods like `may_become?`, `next_values`, and `previous_values`.
+
+```
+Material.states.first.solid? # => true
+Material.states[1].may_become?('solid') # => false
+Material.states[1].next_values # => ['gas']
+```
+
+The automatic definition of this class method can be disabled by passing `states_getter: false`:
+
+```ruby
+steady_state :step, states_getter: false do
+  # ...
+end
+
+MyClass.steps # => NoMethodError
+```
+
+
 ### ActiveModel Support
 
 SteadyState is also available to classes that are not database-backed, as long as they include the `ActiveModel::Model` mixin:

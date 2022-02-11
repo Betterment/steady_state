@@ -14,14 +14,20 @@ Gem::Specification.new do |s|
     Designed to work with `ActiveRecord` and `ActiveModel` classes,
     or anywhere where Rails validations are used.
   DESC
+  s.metadata = {
+    'rubygems_mfa_required' => 'true',
+  }
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['spec/**/*']
 
-  s.add_dependency 'activemodel', '>= 4.0'
-  s.add_dependency 'activesupport', '>= 4.0'
+  s.required_ruby_version = '>= 2.6.5'
 
+  s.add_dependency 'activemodel', '>= 5.2'
+  s.add_dependency 'activesupport', '>= 5.2'
+
+  s.add_development_dependency 'appraisal'
+  s.add_development_dependency 'betterlint'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rubocop-betterment'
 end
