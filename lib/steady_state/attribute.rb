@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'steady_state/attribute/state'
 require 'steady_state/attribute/state_machine'
 require 'steady_state/attribute/transition_validator'

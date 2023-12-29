@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 appraise 'rails-6-1' do
   gem 'activemodel', '~> 6.1.0'
 end
