@@ -5,3 +5,6 @@ inherit_gem:
 AllCops:
   TargetRubyVersion: 3.0
   NewCops: enable
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
