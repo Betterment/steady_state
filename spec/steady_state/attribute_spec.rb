@@ -99,7 +99,7 @@ RSpec.describe SteadyState::Attribute do
     context 'with inheritance' do
       let(:subclass) do
         Class.new(steady_state_class) do
-          def initialize
+          def initialize # rubocop:disable Lint/MissingSuper
             # I do my own thing.
           end
         end
