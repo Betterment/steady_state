@@ -3,5 +3,5 @@ inherit_gem:
     - config/default.yml
 
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.0
   NewCops: enable
