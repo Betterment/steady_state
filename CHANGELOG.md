@@ -11,6 +11,13 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 ### Removed <!-- for now removed features. -->
 ### Fixed <!-- for any bug fixes. -->
 
+## [1.1.0] - 2023-12-29
+### Added
+- Added testing support for Ruby 3.2.
+### Removed
+- Drops support for Ruby < 3.0
+- Drops support for Rails < 6.1
+
 ## [1.0.0] - 2022-02-10
 ### Added
 - Added testing support for Ruby 2.7, 3.0, and 3.1
@@ -34,7 +41,7 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 ### Added
 - The initial open source release! See the README for all available features.
 
-
+[1.1.0]: https://github.com/betterment/uncruft/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/betterment/uncruft/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/betterment/uncruft/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/betterment/uncruft/releases/tag/v0.0.1

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe SteadyState::Attribute do
@@ -29,52 +31,52 @@ RSpec.describe SteadyState::Attribute do
     it 'adds validation errors when initializing to an invalid state' do
       object = steady_state_class.new(state: 'banana')
       expect(object).not_to be_valid
-      expect(object.errors[:state]).to match_array(['is not included in the list'])
+      expect(object.errors[:state]).to contain_exactly('is not included in the list')
     end
 
     it 'allows valid transitions' do
       expect(subject.state.may_become?('liquid')).to eq true
-      expect(subject.state.next_values).to match_array(['liquid'])
-      expect(subject.state.previous_values).to match_array([])
+      expect(subject.state.next_values).to contain_exactly('liquid')
+      expect(subject.state.previous_values).to be_empty
       expect { subject.state = 'liquid' }.to change { subject.state }.from('solid').to('liquid')
       expect(subject).to be_valid
 
       expect(subject.state.may_become?('gas')).to eq true
-      expect(subject.state.next_values).to match_array(['gas'])
-      expect(subject.state.previous_values).to match_array(['solid'])
+      expect(subject.state.next_values).to contain_exactly('gas')
+      expect(subject.state.previous_values).to contain_exactly('solid')
       expect { subject.state = 'gas' }.to change { subject.state }.from('liquid').to('gas')
       expect(subject).to be_valid
 
       expect(subject.state.may_become?('plasma')).to eq true
-      expect(subject.state.next_values).to match_array(['plasma'])
-      expect(subject.state.previous_values).to match_array(['liquid'])
+      expect(subject.state.next_values).to contain_exactly('plasma')
+      expect(subject.state.previous_values).to contain_exactly('liquid')
       expect { subject.state = 'plasma' }.to change { subject.state }.from('gas').to('plasma')
       expect(subject).to be_valid
       expect(subject.state.next_values).to be_empty
-      expect(subject.state.previous_values).to match_array(['gas'])
+      expect(subject.state.previous_values).to contain_exactly('gas')
     end
 
     it 'adds validation errors for invalid transitions' do
       expect(subject.state.may_become?('gas')).to eq false
       expect { subject.state = 'gas' }.to change { subject.state }.from('solid').to('gas')
       expect(subject).not_to be_valid
-      expect(subject.errors[:state]).to match_array(['is invalid'])
-      expect(subject.state.next_values).to match_array(['liquid'])
-      expect(subject.state.previous_values).to match_array([])
+      expect(subject.errors[:state]).to contain_exactly('is invalid')
+      expect(subject.state.next_values).to contain_exactly('liquid')
+      expect(subject.state.previous_values).to be_empty
 
       expect(subject.state.may_become?('plasma')).to eq false
       expect { subject.state = 'plasma' }.to change { subject.state }.from('gas').to('plasma')
       expect(subject).not_to be_valid
-      expect(subject.errors[:state]).to match_array(['is invalid'])
-      expect(subject.state.next_values).to match_array(['liquid'])
-      expect(subject.state.previous_values).to match_array([])
+      expect(subject.errors[:state]).to contain_exactly('is invalid')
+      expect(subject.state.next_values).to contain_exactly('liquid')
+      expect(subject.state.previous_values).to be_empty
 
       expect(subject.state.may_become?('solid')).to eq false
       expect { subject.state = 'solid' }.to change { subject.state }.from('plasma').to('solid')
       expect(subject).not_to be_valid
-      expect(subject.errors[:state]).to match_array(['is invalid'])
-      expect(subject.state.next_values).to match_array(['liquid'])
-      expect(subject.state.previous_values).to match_array([])
+      expect(subject.errors[:state]).to contain_exactly('is invalid')
+      expect(subject.state.next_values).to contain_exactly('liquid')
+      expect(subject.state.previous_values).to be_empty
     end
   end
 
@@ -97,7 +99,7 @@ RSpec.describe SteadyState::Attribute do
     context 'with inheritance' do
       let(:subclass) do
         Class.new(steady_state_class) do
-          def initialize
+          def initialize # rubocop:disable Lint/MissingSuper
             # I do my own thing.
           end
         end
@@ -123,7 +125,7 @@ RSpec.describe SteadyState::Attribute do
       it 'does not allow initialization to an invalid next state' do
         object = steady_state_class.new(state: 'solid')
         expect(object).not_to be_valid
-        expect(object.errors[:state]).to match_array(['is invalid'])
+        expect(object.errors[:state]).to contain_exactly('is invalid')
       end
 
       it 'allows initialization to a valid next state' do
@@ -133,40 +135,40 @@ RSpec.describe SteadyState::Attribute do
       it 'adds validation errors when initializing to an invalid state' do
         object = steady_state_class.new(state: 'banana')
         expect(object).not_to be_valid
-        expect(object.errors[:state]).to match_array(['is invalid', 'is not included in the list'])
+        expect(object.errors[:state]).to contain_exactly('is invalid', 'is not included in the list')
       end
 
       it 'allows valid transitions' do
         expect(subject).to be_valid
         expect(subject.state.may_become?('gas')).to eq true
-        expect(subject.state.next_values).to match_array(['gas'])
-        expect(subject.state.previous_values).to match_array(['solid'])
+        expect(subject.state.next_values).to contain_exactly('gas')
+        expect(subject.state.previous_values).to contain_exactly('solid')
         expect { subject.state = 'gas' }.to change { subject.state }.from('liquid').to('gas')
         expect(subject).to be_valid
 
         expect(subject.state.may_become?('plasma')).to eq true
-        expect(subject.state.next_values).to match_array(['plasma'])
-        expect(subject.state.previous_values).to match_array(['liquid'])
+        expect(subject.state.next_values).to contain_exactly('plasma')
+        expect(subject.state.previous_values).to contain_exactly('liquid')
         expect { subject.state = 'plasma' }.to change { subject.state }.from('gas').to('plasma')
         expect(subject).to be_valid
         expect(subject.state.next_values).to be_empty
-        expect(subject.state.previous_values).to match_array(['gas'])
+        expect(subject.state.previous_values).to contain_exactly('gas')
       end
 
       it 'adds validation errors for invalid transitions' do
         expect(subject.state.may_become?('plasma')).to eq false
         expect { subject.state = 'plasma' }.to change { subject.state }.from('liquid').to('plasma')
         expect(subject).not_to be_valid
-        expect(subject.errors[:state]).to match_array(['is invalid'])
-        expect(subject.state.next_values).to match_array(['gas'])
-        expect(subject.state.previous_values).to match_array(['solid'])
+        expect(subject.errors[:state]).to contain_exactly('is invalid')
+        expect(subject.state.next_values).to contain_exactly('gas')
+        expect(subject.state.previous_values).to contain_exactly('solid')
 
         expect(subject.state.may_become?('solid')).to eq false
         expect { subject.state = 'solid' }.to change { subject.state }.from('plasma').to('solid')
         expect(subject).not_to be_valid
-        expect(subject.errors[:state]).to match_array(['is invalid'])
-        expect(subject.state.next_values).to match_array(['gas'])
-        expect(subject.state.previous_values).to match_array(['solid'])
+        expect(subject.errors[:state]).to contain_exactly('is invalid')
+        expect(subject.state.next_values).to contain_exactly('gas')
+        expect(subject.state.previous_values).to contain_exactly('solid')
       end
     end
   end
@@ -189,9 +191,9 @@ RSpec.describe SteadyState::Attribute do
       expect(subject.step.may_become?('step-2')).to eq true
       expect(subject.step.may_become?('cancelled')).to eq true
       expect(subject.step.next_values).to match_array(%w(cancelled step-2))
-      expect(subject.step.previous_values).to match_array([])
+      expect(subject.step.previous_values).to be_empty
       expect { subject.step = 'cancelled' }.to change { subject.step }.from('step-1').to('cancelled')
-      expect(subject.step.next_values).to match_array([])
+      expect(subject.step.next_values).to be_empty
       expect(subject.step.previous_values).to match_array(%w(step-1 step-2))
       expect(subject).to be_valid
     end
@@ -201,17 +203,17 @@ RSpec.describe SteadyState::Attribute do
       expect(subject.step.may_become?('step-2')).to eq true
       expect(subject.step.may_become?('cancelled')).to eq true
       expect(subject.step.next_values).to match_array(%w(cancelled step-2))
-      expect(subject.step.previous_values).to match_array([])
+      expect(subject.step.previous_values).to be_empty
       expect { subject.step = 'step-2' }.to change { subject.step }.from('step-1').to('step-2')
       expect(subject).to be_valid
 
       expect(subject.step.may_become?('step-1')).to eq false
       expect(subject.step.may_become?('step-2')).to eq false
       expect(subject.step.may_become?('cancelled')).to eq true
-      expect(subject.step.next_values).to match_array(['cancelled'])
-      expect(subject.step.previous_values).to match_array(['step-1'])
+      expect(subject.step.next_values).to contain_exactly('cancelled')
+      expect(subject.step.previous_values).to contain_exactly('step-1')
       expect { subject.step = 'cancelled' }.to change { subject.step }.from('step-2').to('cancelled')
-      expect(subject.step.next_values).to match_array([])
+      expect(subject.step.next_values).to be_empty
       expect(subject.step.previous_values).to match_array(%w(step-1 step-2))
       expect(subject).to be_valid
     end

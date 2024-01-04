@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'steady_state/attribute/state'
 require 'steady_state/attribute/state_machine'
 require 'steady_state/attribute/transition_validator'
@@ -17,26 +19,26 @@ module SteadyState
         overrides = Module.new do
           define_method :"validate_#{attr_name}_transition_to" do |next_value|
             if public_send(attr_name).may_become?(next_value)
-              remove_instance_variable("@last_valid_#{attr_name}") if instance_variable_defined?("@last_valid_#{attr_name}")
-            elsif !instance_variable_defined?("@last_valid_#{attr_name}")
-              instance_variable_set("@last_valid_#{attr_name}", public_send(attr_name))
+              remove_instance_variable(:"@last_valid_#{attr_name}") if instance_variable_defined?(:"@last_valid_#{attr_name}")
+            elsif !instance_variable_defined?(:"@last_valid_#{attr_name}")
+              instance_variable_set(:"@last_valid_#{attr_name}", public_send(attr_name))
             end
           end
 
           define_method :"#{attr_name}=" do |value|
-            unless instance_variable_defined?("@#{attr_name}_state_initialized")
-              instance_variable_set("@#{attr_name}_state_initialized", true)
+            unless instance_variable_defined?(:"@#{attr_name}_state_initialized")
+              instance_variable_set(:"@#{attr_name}_state_initialized", true)
             end
             public_send(:"validate_#{attr_name}_transition_to", value) if public_send(attr_name).present?
             super(value)
           end
 
           define_method :"#{attr_name}" do |*args, &blk|
-            unless instance_variable_defined?("@#{attr_name}_state_initialized")
+            unless instance_variable_defined?(:"@#{attr_name}_state_initialized")
               public_send(:"#{attr_name}=", state_machines[attr_name].start) if super(*args, &blk).blank?
-              instance_variable_set("@#{attr_name}_state_initialized", true)
+              instance_variable_set(:"@#{attr_name}_state_initialized", true)
             end
-            last_valid_value = instance_variable_get("@last_valid_#{attr_name}") if instance_variable_defined?("@last_valid_#{attr_name}")
+            last_valid_value = instance_variable_get(:"@last_valid_#{attr_name}") if instance_variable_defined?(:"@last_valid_#{attr_name}")
             state_machines[attr_name].new_state super(*args, &blk), last_valid_value
           end
         end

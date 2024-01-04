@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.push File.expand_path('lib', __dir__)
 
 require 'steady_state/version'
@@ -19,9 +21,8 @@ Gem::Specification.new do |s|
   }
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
-  s.test_files = Dir['spec/**/*']
 
-  s.required_ruby_version = '>= 2.6.5'
+  s.required_ruby_version = '>= 3.0'
 
   s.add_dependency 'activemodel', '>= 5.2'
   s.add_dependency 'activesupport', '>= 5.2'
