@@ -6,5 +6,3 @@ pkg/
 spec/reports/
 spec/examples.txt
 tmp/
-Gemfile.lock
-gemfiles/*.lock
