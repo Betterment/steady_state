@@ -210,6 +210,27 @@ steady_state :step, scopes: false do
 end
 ```
 
+### Prefixed Scopes
+
+On ActiveRecord objects, you may optionally define a prefix for your scope.  This may be useful when dealing with multiple state machines on one object.
+
+```ruby
+steady_state :state, scopes: true do
+  state 'solid', default: true
+  state 'liquid', from: 'solid'
+  # ...
+end
+
+steady_state :temperature, scopes: true, scopes_prefix: 'temperature' do
+  state 'cold', default: true
+  state 'warm', from: 'cold'
+  # ...
+end
+
+Material.solid # => query for 'solid' records
+Material.temperature_cold # => query for 'cold' records
+```
+
 ### Next and Previous States
 
 The `may_become?` method can be used to see if setting the state to a particular value would be allowed (ignoring all other validations):
@@ -277,7 +298,7 @@ class Material
     self.state = 'liquid'
     valid? # will return `false` if state transition is invalid
   end
-  
+
   def melt!
     self.state = 'liquid'
     validate! # will raise an exception if state transition is invalid
