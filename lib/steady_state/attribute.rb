@@ -15,7 +15,15 @@ module SteadyState
     end
 
     class_methods do
-      def steady_state(attr_name, predicates: true, states_getter: true, scopes: SteadyState.active_record?(self), &block) # rubocop:disable Metrics/
+      # rubocop:disable Metrics/
+      def steady_state(
+        attr_name,
+        predicates: true,
+        states_getter: true,
+        scopes: SteadyState.active_record?(self),
+        scopes_prefix: "",
+        &block
+      )
         overrides = Module.new do
           define_method :"validate_#{attr_name}_transition_to" do |next_value|
             if public_send(attr_name).may_become?(next_value)
@@ -55,14 +63,17 @@ module SteadyState
         end
 
         delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
+
         if scopes
+          scope_name = ->(state, prefix) { prefix.empty? ? state : "#{prefix}_#{state}" }
           state_machines[attr_name].states.each do |state|
-            scope state.to_sym, -> { where(attr_name.to_sym => state) }
+            scope scope_name.call(state, scopes_prefix).to_sym, -> { where(attr_name.to_sym => state) }
           end
         end
 
         validates :"#{attr_name}", 'steady_state/attribute/transition' => true,
                                    inclusion: { in: state_machines[attr_name].states }
+        # rubocop:enable Metrics/
       end
     end
   end
