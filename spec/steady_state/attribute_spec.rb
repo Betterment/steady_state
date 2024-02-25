@@ -394,6 +394,21 @@ RSpec.describe SteadyState::Attribute do
       end
     end
 
+    context 'enabled with custom scope prefix' do
+      let(:opts) { { scopes: true, scopes_prefix: 'car' } }
+
+      it 'defines a scope for each state with the prefix' do
+        expect(steady_state_class.defined_scopes.keys).to eq %i(car_driving car_stopped car_parked)
+
+        expect(query_object).to receive(:where).with(car: 'driving')
+        query_object.instance_exec(&steady_state_class.defined_scopes[:car_driving])
+        expect(query_object).to receive(:where).with(car: 'stopped')
+        query_object.instance_exec(&steady_state_class.defined_scopes[:car_stopped])
+        expect(query_object).to receive(:where).with(car: 'parked')
+        query_object.instance_exec(&steady_state_class.defined_scopes[:car_parked])
+      end
+    end
+
     context 'disabled' do
       let(:opts) { { scopes: false } }
 
