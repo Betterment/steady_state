@@ -210,25 +210,20 @@ steady_state :step, scopes: false do
 end
 ```
 
-### Prefixed Scopes
-
-On ActiveRecord objects, you may optionally define a prefix for your scope.  This may be useful when dealing with multiple state machines on one object.
+`steady_state` also follows the same `prefix` api as `delegate` in Rails.  You may optionally define your scopes to be prefixed to the name of the state machine with `prefix: true`, or you may provide a custom prefix with `prefix: :some_custom_name`.  This may be useful when dealing with multiple state machines on one object.
 
 ```ruby
-steady_state :state, scopes: true do
-  state 'solid', default: true
-  state 'liquid', from: 'solid'
-  # ...
+steady_state :temperature, scopes: true, prefix: true do
+  state 'cold', default: true
 end
 
-steady_state :temperature, scopes: true, scopes_prefix: 'temperature' do
-  state 'cold', default: true
-  state 'warm', from: 'cold'
-  # ...
+steady_state :conductivity, scopes: true, prefix: :sigma do
+  state 'conductive', default: true
 end
 
 Material.solid # => query for 'solid' records
 Material.temperature_cold # => query for 'cold' records
+Material.sigma_conductive # => query for 'conductive' records
 ```
 
 ### Next and Previous States
