@@ -210,6 +210,22 @@ steady_state :step, scopes: false do
 end
 ```
 
+`steady_state` also follows the same `prefix` api as `delegate` in Rails.  You may optionally define your scopes to be prefixed to the name of the state machine with `prefix: true`, or you may provide a custom prefix with `prefix: :some_custom_name`.  This may be useful when dealing with multiple state machines on one object.
+
+```ruby
+steady_state :temperature, scopes: { prefix: true } do
+  state 'cold', default: true
+end
+
+steady_state :color_temperature, scopes: { prefix: 'color' } do
+  state 'cold', default: true
+end
+
+Material.solid # => query for 'solid' records
+Material.temperature_cold # => query for records with a cold temperature
+Material.color_cold # => query for for records with a cold color temperature
+```
+
 ### Next and Previous States
 
 The `may_become?` method can be used to see if setting the state to a particular value would be allowed (ignoring all other validations):
@@ -277,7 +293,7 @@ class Material
     self.state = 'liquid'
     valid? # will return `false` if state transition is invalid
   end
-  
+
   def melt!
     self.state = 'liquid'
     validate! # will raise an exception if state transition is invalid
