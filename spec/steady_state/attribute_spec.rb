@@ -395,7 +395,7 @@ RSpec.describe SteadyState::Attribute do
     end
 
     context 'enabled with prefix: true' do
-      let(:opts) { { scopes: true, prefix: true } }
+      let(:opts) { { scopes: { prefix: true } } }
 
       it 'defines a scope for each state, prefixed with the name of the state machine' do
         expect(steady_state_class.defined_scopes.keys).to eq %i(car_driving car_stopped car_parked)
@@ -410,7 +410,7 @@ RSpec.describe SteadyState::Attribute do
     end
 
     context 'enabled with a custom prefix such as prefix: :automobile' do
-      let(:opts) { { scopes: true, prefix: :automobile } }
+      let(:opts) { { scopes: { prefix: :automobile } } }
 
       it 'defines a scope for each state with the custom prefix' do
         expect(steady_state_class.defined_scopes.keys).to eq %i(automobile_driving automobile_stopped automobile_parked)
