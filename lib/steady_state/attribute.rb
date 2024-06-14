@@ -68,5 +68,9 @@ module SteadyState
                                    inclusion: { in: state_machines[attr_name].states }
       end
     end
+
+    def self.build_prefix(attr_name, prefix: false)
+      prefix ? "#{prefix == true ? attr_name : prefix}_" : ""
+    end
   end
 end
