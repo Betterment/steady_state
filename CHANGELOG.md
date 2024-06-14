@@ -11,6 +11,11 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 ### Removed <!-- for now removed features. -->
 ### Fixed <!-- for any bug fixes. -->
 
+## [1.2.0] - 2024-06-14
+### Added
+- Added ability for scopes to use a named prefix, which will be useful when
+  dealing with multiple state machines on one object.
+
 ## [1.1.0] - 2023-12-29
 ### Added
 - Added testing support for Ruby 3.2.
