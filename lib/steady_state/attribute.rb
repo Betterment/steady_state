@@ -56,11 +56,8 @@ module SteadyState
 
         delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
         if scopes
-          prefix = if scopes == true
-                     ''
-                   elsif scopes.is_a?(Hash) && scopes[:prefix]
-                     "#{scopes[:prefix] == true ? attr_name : scopes[:prefix]}_"
-                   end
+          scopes = scopes.is_a?(Hash) ? scopes : {}
+          prefix = SteadyState::Attribute.build_prefix(attr_name, **scopes)
 
           state_machines[attr_name].states.each do |state|
             scope :"#{prefix}#{state}", -> { where(attr_name.to_sym => state) }
