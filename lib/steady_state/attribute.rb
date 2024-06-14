@@ -56,7 +56,7 @@ module SteadyState
 
         delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
         if scopes
-          scopes = scopes.is_a?(Hash) ? scopes : {}
+          scopes = {} unless scopes.is_a?(Hash)
           prefix = SteadyState::Attribute.build_prefix(attr_name, **scopes)
 
           state_machines[attr_name].states.each do |state|
@@ -70,7 +70,11 @@ module SteadyState
     end
 
     def self.build_prefix(attr_name, prefix: false)
-      prefix ? "#{prefix == true ? attr_name : prefix}_" : ""
+      if prefix
+        "#{prefix == true ? attr_name : prefix}_"
+      else
+        ""
+      end
     end
   end
 end
