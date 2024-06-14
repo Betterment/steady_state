@@ -326,45 +326,62 @@ RSpec.describe SteadyState::Attribute do
   end
 
   context 'with the scopes option' do
-    let(:query_object) { double(where: []) } # rubocop:disable RSpec/VerifiedDoubles
+    context "when the scopes are properly defined" do
+      let(:query_object) { double(where: []) } # rubocop:disable RSpec/VerifiedDoubles
 
-    before do
-      options = opts
-      steady_state_class.module_eval do
-        attr_accessor :car
+      before do
+        options = opts
+        steady_state_class.module_eval do
+          attr_accessor :car
 
-        def self.defined_scopes
-          @defined_scopes ||= {}
-        end
+          def self.defined_scopes
+            @defined_scopes ||= {}
+          end
 
-        def self.scope(name, callable)
-          defined_scopes[name] ||= callable
-        end
+          def self.scope(name, callable)
+            defined_scopes[name] ||= callable
+          end
 
-        steady_state :car, **options do
-          state 'driving', default: true
-          state 'stopped', from: 'driving'
-          state 'parked', from: 'stopped'
-        end
-      end
-    end
-
-    context 'default' do
-      let(:opts) { {} }
-
-      it 'does not define scope methods' do
-        expect(steady_state_class.defined_scopes.keys).to eq []
-      end
-
-      context 'on an ActiveRecord' do
-        let(:steady_state_class) do
-          stub_const('ActiveRecord::Base', Class.new)
-
-          Class.new(ActiveRecord::Base) do
-            include ActiveModel::Model
-            include SteadyState
+          steady_state :car, **options do
+            state 'driving', default: true
+            state 'stopped', from: 'driving'
+            state 'parked', from: 'stopped'
           end
         end
+      end
+
+      context 'default' do
+        let(:opts) { {} }
+
+        it 'does not define scope methods' do
+          expect(steady_state_class.defined_scopes.keys).to eq []
+        end
+
+        context 'on an ActiveRecord' do
+          let(:steady_state_class) do
+            stub_const('ActiveRecord::Base', Class.new)
+
+            Class.new(ActiveRecord::Base) do
+              include ActiveModel::Model
+              include SteadyState
+            end
+          end
+
+          it 'defines a scope for each state' do
+            expect(steady_state_class.defined_scopes.keys).to eq %i(driving stopped parked)
+
+            expect(query_object).to receive(:where).with(car: 'driving')
+            query_object.instance_exec(&steady_state_class.defined_scopes[:driving])
+            expect(query_object).to receive(:where).with(car: 'stopped')
+            query_object.instance_exec(&steady_state_class.defined_scopes[:stopped])
+            expect(query_object).to receive(:where).with(car: 'parked')
+            query_object.instance_exec(&steady_state_class.defined_scopes[:parked])
+          end
+        end
+      end
+
+      context 'enabled' do
+        let(:opts) { { scopes: true } }
 
         it 'defines a scope for each state' do
           expect(steady_state_class.defined_scopes.keys).to eq %i(driving stopped parked)
@@ -377,58 +394,64 @@ RSpec.describe SteadyState::Attribute do
           query_object.instance_exec(&steady_state_class.defined_scopes[:parked])
         end
       end
-    end
 
-    context 'enabled' do
-      let(:opts) { { scopes: true } }
+      context 'enabled with prefix: true' do
+        let(:opts) { { scopes: { prefix: true } } }
 
-      it 'defines a scope for each state' do
-        expect(steady_state_class.defined_scopes.keys).to eq %i(driving stopped parked)
+        it 'defines a scope for each state, prefixed with the name of the state machine' do
+          expect(steady_state_class.defined_scopes.keys).to eq %i(car_driving car_stopped car_parked)
 
-        expect(query_object).to receive(:where).with(car: 'driving')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:driving])
-        expect(query_object).to receive(:where).with(car: 'stopped')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:stopped])
-        expect(query_object).to receive(:where).with(car: 'parked')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:parked])
+          expect(query_object).to receive(:where).with(car: 'driving')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:car_driving])
+          expect(query_object).to receive(:where).with(car: 'stopped')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:car_stopped])
+          expect(query_object).to receive(:where).with(car: 'parked')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:car_parked])
+        end
+      end
+
+      context 'enabled with a custom prefix such as prefix: :automobile' do
+        let(:opts) { { scopes: { prefix: :automobile } } }
+
+        it 'defines a scope for each state with the custom prefix' do
+          expect(steady_state_class.defined_scopes.keys).to eq %i(automobile_driving automobile_stopped automobile_parked)
+
+          expect(query_object).to receive(:where).with(car: 'driving')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_driving])
+          expect(query_object).to receive(:where).with(car: 'stopped')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_stopped])
+          expect(query_object).to receive(:where).with(car: 'parked')
+          query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_parked])
+        end
+      end
+
+      context 'disabled' do
+        let(:opts) { { scopes: false } }
+
+        it 'does not define scope methods' do
+          expect(steady_state_class.defined_scopes.keys).to eq []
+        end
       end
     end
 
-    context 'enabled with prefix: true' do
-      let(:opts) { { scopes: { prefix: true } } }
+    context "when the scopes are not properly defined" do
+      let(:opts) { { scopes: { prexxfixx: :typo } } }
 
-      it 'defines a scope for each state, prefixed with the name of the state machine' do
-        expect(steady_state_class.defined_scopes.keys).to eq %i(car_driving car_stopped car_parked)
+      let(:evaluated_steady_state_class) do
+        options = opts
+        steady_state_class.module_eval do
+          attr_accessor :car
 
-        expect(query_object).to receive(:where).with(car: 'driving')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:car_driving])
-        expect(query_object).to receive(:where).with(car: 'stopped')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:car_stopped])
-        expect(query_object).to receive(:where).with(car: 'parked')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:car_parked])
+          def self.scope(*); end
+
+          steady_state :car, **options do
+            state 'driving', default: true
+          end
+        end
       end
-    end
 
-    context 'enabled with a custom prefix such as prefix: :automobile' do
-      let(:opts) { { scopes: { prefix: :automobile } } }
-
-      it 'defines a scope for each state with the custom prefix' do
-        expect(steady_state_class.defined_scopes.keys).to eq %i(automobile_driving automobile_stopped automobile_parked)
-
-        expect(query_object).to receive(:where).with(car: 'driving')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_driving])
-        expect(query_object).to receive(:where).with(car: 'stopped')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_stopped])
-        expect(query_object).to receive(:where).with(car: 'parked')
-        query_object.instance_exec(&steady_state_class.defined_scopes[:automobile_parked])
-      end
-    end
-
-    context 'disabled' do
-      let(:opts) { { scopes: false } }
-
-      it 'does not define scope methods' do
-        expect(steady_state_class.defined_scopes.keys).to eq []
+      it 'raises an error' do
+        expect { evaluated_steady_state_class }.to raise_error(ArgumentError, /unknown keyword: :prexxfixx/)
       end
     end
   end
