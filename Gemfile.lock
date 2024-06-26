@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    steady_state (1.1.0)
+    steady_state (1.2.0)
       activemodel (>= 5.2)
       activesupport (>= 5.2)
 
