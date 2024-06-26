@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    steady_state (1.1.0)
+    steady_state (1.2.0)
       activemodel (>= 5.2)
       activesupport (>= 5.2)
 
@@ -102,10 +102,10 @@ GEM
     unicode-display_width (2.5.0)
 
 PLATFORMS
+  arm64-darwin-22
   x86_64-darwin-21
   x86_64-darwin-22
   x86_64-linux
-  arm64-darwin-22
 
 DEPENDENCIES
   activemodel (~> 7.0.0)

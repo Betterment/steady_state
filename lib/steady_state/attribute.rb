@@ -56,13 +56,24 @@ module SteadyState
 
         delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
         if scopes
+          scopes = {} unless scopes.is_a?(Hash)
+          prefix = SteadyState::Attribute.build_prefix(attr_name, **scopes)
+
           state_machines[attr_name].states.each do |state|
-            scope state.to_sym, -> { where(attr_name.to_sym => state) }
+            scope :"#{prefix}#{state}", -> { where(attr_name.to_sym => state) }
           end
         end
 
         validates :"#{attr_name}", 'steady_state/attribute/transition' => true,
                                    inclusion: { in: state_machines[attr_name].states }
+      end
+    end
+
+    def self.build_prefix(attr_name, prefix: false)
+      if prefix
+        "#{prefix == true ? attr_name : prefix}_"
+      else
+        ""
       end
     end
   end
