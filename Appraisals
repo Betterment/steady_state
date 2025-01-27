@@ -2,10 +2,12 @@
 
 appraise 'rails-6-1' do
   gem 'activemodel', '~> 6.1.0'
+  gem 'concurrent-ruby', '1.3.4'
 end
 
 appraise 'rails-7-0' do
   gem 'activemodel', '~> 7.0.0'
+  gem 'concurrent-ruby', '1.3.4'
 end
 
 appraise 'rails-7-1' do
