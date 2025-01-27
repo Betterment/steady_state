@@ -65,7 +65,7 @@ module SteadyState
         end
 
         validates :"#{attr_name}", 'steady_state/attribute/transition' => true,
-                                   inclusion: { in: state_machines[attr_name].states }
+          inclusion: { in: state_machines[attr_name].states }
       end
     end
 
