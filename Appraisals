@@ -3,6 +3,7 @@
 appraise 'rails-6-1' do
   gem 'activemodel', '~> 6.1.0'
   gem 'concurrent-ruby', '1.3.4'
+  gem 'zeitwerk', '~> 2.6.18'
 end
 
 appraise 'rails-7-0' do
