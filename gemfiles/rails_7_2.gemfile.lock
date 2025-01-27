@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: ..
   specs:
     steady_state (1.2.0)
       activemodel (>= 5.2)
@@ -8,9 +8,9 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (8.0.1)
-      activesupport (= 8.0.1)
-    activesupport (8.0.1)
+    activemodel (7.2.2.1)
+      activesupport (= 7.2.2.1)
+    activesupport (7.2.2.1)
       base64
       benchmark (>= 0.3)
       bigdecimal
@@ -22,7 +22,6 @@ GEM
       minitest (>= 5.1)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
-      uri (>= 0.13.1)
     appraisal (2.5.0)
       bundler
       rake
@@ -113,16 +112,13 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.6.0)
-    uri (1.0.2)
 
 PLATFORMS
-  arm64-darwin-22
+  arm64-darwin-23
   ruby
-  x86_64-darwin-21
-  x86_64-darwin-22
-  x86_64-linux
 
 DEPENDENCIES
+  activemodel (~> 7.2.0)
   appraisal
   betterlint
   rake

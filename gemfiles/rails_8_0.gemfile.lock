@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: ..
   specs:
     steady_state (1.2.0)
       activemodel (>= 5.2)
@@ -116,13 +116,11 @@ GEM
     uri (1.0.2)
 
 PLATFORMS
-  arm64-darwin-22
+  arm64-darwin-23
   ruby
-  x86_64-darwin-21
-  x86_64-darwin-22
-  x86_64-linux
 
 DEPENDENCIES
+  activemodel (~> 8.0.0)
   appraisal
   betterlint
   rake
