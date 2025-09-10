@@ -1,9 +1,9 @@
 PATH
   remote: ..
   specs:
-    steady_state (1.2.0)
-      activemodel (>= 5.2)
-      activesupport (>= 5.2)
+    steady_state (2.0.0)
+      activemodel (>= 7.2)
+      activesupport (>= 7.2)
 
 GEM
   remote: https://rubygems.org/

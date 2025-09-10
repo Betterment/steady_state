@@ -11,6 +11,11 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 ### Removed <!-- for now removed features. -->
 ### Fixed <!-- for any bug fixes. -->
 
+## [2.0.0] - 2025-09-05
+### Removed
+- Drops support for Ruby < 3.2
+- Drops support for Rails < 7.2.
+
 ## [1.2.0] - 2024-06-14
 ### Added
 - Added ability for scopes to use a named prefix, which will be useful when
