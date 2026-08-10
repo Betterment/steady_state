@@ -8,9 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.2', '3.3']
+        ruby: ['3.3']
         gemfile:
-          - gemfiles/rails_7_2.gemfile
           - gemfiles/rails_8_0.gemfile
     steps:
     - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2

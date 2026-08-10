@@ -22,10 +22,10 @@ Gem::Specification.new do |s|
 
   s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
 
-  s.required_ruby_version = '>= 3.2'
+  s.required_ruby_version = '>= 3.3'
 
-  s.add_dependency 'activemodel', '>= 7.2'
-  s.add_dependency 'activesupport', '>= 7.2'
+  s.add_dependency 'activemodel', '>= 8.0'
+  s.add_dependency 'activesupport', '>= 8.0'
 
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'betterlint'
