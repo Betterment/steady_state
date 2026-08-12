@@ -6,6 +6,8 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 
 ## [Unreleased]
 ### Added <!-- for new features. -->
+- Ship Sorbet RBI annotations for the `steady_state` DSL, so that `state`
+  declarations typecheck inside `steady_state` blocks in `typed: true` files.
 ### Changed <!-- for changes in existing functionality. -->
 ### Deprecated <!-- for soon-to-be removed features. -->
 ### Removed <!-- for now removed features. -->
