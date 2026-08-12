@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
     'rubygems_mfa_required' => 'true',
   }
 
-  s.files = Dir['{app,config,db,lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
+  s.files = Dir['{app,config,db,lib,rbi}/**/*', 'LICENSE', 'Rakefile', 'README.md']
 
   s.required_ruby_version = '>= 3.3'
 
@@ -31,4 +31,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'betterlint'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
+  s.add_development_dependency 'sorbet'
 end
