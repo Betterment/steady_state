@@ -54,7 +54,16 @@ module SteadyState
           end
         end
 
-        delegate(*state_machines[attr_name].predicates, to: attr_name, allow_nil: true) if predicates
+        if predicates
+          state_machines[attr_name].predicates.each do |predicate|
+            # Not `delegate`: its splat-arg methods conflict with the zero-arity
+            # predicates in DSL RBIs when tapioca captures them in a gem RBI.
+            define_method(predicate) do
+              public_send(attr_name)&.public_send(predicate)
+            end
+          end
+        end
+
         if scopes
           scopes = {} unless scopes.is_a?(Hash)
           prefix = SteadyState::Attribute.build_prefix(attr_name, **scopes)
