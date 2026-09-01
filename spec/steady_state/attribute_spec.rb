@@ -257,8 +257,6 @@ RSpec.describe SteadyState::Attribute do
       end
 
       it 'defines each predicate with explicit zero arity' do
-        # Splat-arg predicates (e.g. from `delegate`) captured in tapioca gem
-        # RBIs conflict with the zero-arity predicates in DSL-generated RBIs.
         %i(open? closed? locked?).each do |predicate|
           expect(subject.method(predicate).arity).to eq 0
           expect(subject.method(predicate).parameters).to be_empty
