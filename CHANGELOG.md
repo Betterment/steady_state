@@ -7,12 +7,15 @@ and this project aims to adhere to [Semantic Versioning](http://semver.org/spec/
 ## [Unreleased]
 ### Added <!-- for new features. -->
 ### Changed <!-- for changes in existing functionality. -->
-- State predicate methods are now defined with explicit zero arity instead of
-  via `delegate`, so tapioca gem RBIs no longer conflict with DSL-generated
-  RBIs. Calling a predicate with arguments now raises `ArgumentError`.
 ### Deprecated <!-- for soon-to-be removed features. -->
 ### Removed <!-- for now removed features. -->
 ### Fixed <!-- for any bug fixes. -->
+
+## [2.3.0] - 2026-09-10
+### Changed
+- State predicate methods are now defined with explicit zero arity instead of
+  via `delegate`, so tapioca gem RBIs no longer conflict with DSL-generated
+  RBIs. Calling a predicate with arguments now raises `ArgumentError`.
 
 ## [2.2.0] - 2026-08-12
 ### Added
