@@ -255,6 +255,13 @@ RSpec.describe SteadyState::Attribute do
         expect(subject.closed?).to eq false
         expect(subject.locked?).to eq true
       end
+
+      it 'defines each predicate with explicit zero arity' do
+        %i(open? closed? locked?).each do |predicate|
+          expect(subject.method(predicate).arity).to eq 0
+          expect(subject.method(predicate).parameters).to be_empty
+        end
+      end
     end
 
     context 'enabled' do
